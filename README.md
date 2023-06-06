@@ -1,5 +1,7 @@
 # PgTestCase
 
+[![Hex.pm](https://img.shields.io/hexpm/v/pg_test_case.svg?style=flat-square)](https://hex.pm/packages/pg_test_case)
+
 PgTestCase is a small utility to manage the data lifecycle during tests
 
 The module creates a temporary postgres server for your test session, runs your Ecto
