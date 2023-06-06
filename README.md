@@ -1,11 +1,18 @@
 # PgTestCase
 
-**TODO: Add description**
+PgTestCase is a small utility to manage the data lifecycle during tests
+
+The module creates a temporary postgres server for your test session, runs your Ecto
+migrations, and finally deletes the postgres server after all the tests have completed.
+
+This module is meant to be used with ExUnit and Ecto, and specifically Ecto backed by
+postgres. It will restart the Ecto Repo with the temporary database configuration, so that
+tests can use Ecto.Repo just like normal.
+
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `pg_test_case` to your list of dependencies in `mix.exs`:
+Add `pg_test_case` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
@@ -15,7 +22,30 @@ def deps do
 end
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/pg_test_case>.
+Note that PgTestCase will create a temporary postgres server, which requires PostgreSQL (and related
+utils) to be installed on your machine. Specifically, it may use the following executables: `initdb`,
+`postgres`, and `pg_ctl`.
+
+
+## Use
+
+To get started, simply use the module and tell it about your application and Ecto.Repo. It will
+in turn use ExUnit.Case, which allows you to define test cases using `setup` and/or `setup_all`.
+
+In this example we will tell ExUnit.Case to run `:initdb` and `:migrations`, to start the temporary
+database and run the migrations, respectively.
+
+```elixir
+defmodule MyAppTest do
+  use PgTestCase,
+    otp_app: :my_app,
+    repo: MyApp.Repo
+
+  setup_all [:initdb, :migrations]
+
+  test "validates database model" do
+    assert true
+  end
+end
+```
 

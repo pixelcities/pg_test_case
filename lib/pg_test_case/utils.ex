@@ -52,7 +52,7 @@ defmodule PgTestCase.Utils do
     stop_postgres(dir)
     File.rm_rf!(dir)
 
-    # Also perform a quick check to see if there are any zombie process due to a previous bad exit
+    # Also perform a quick check to see if there are any zombie processes due to a previous bad exit
     dirs =
       System.tmp_dir!()
       |> Path.join("PgTestCase.*/data/postmaster.pid")
