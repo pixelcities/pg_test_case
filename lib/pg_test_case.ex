@@ -37,7 +37,7 @@ defmodule PgTestCase do
 
         repo = @repo.start_link()
         if match?({:error, {:already_started, _pid}}, repo) do
-           @repo.stop() # Assumes a supervisor will restart the repo
+           @repo.stop() # Assume a supervisor will restart the repo
         end
 
         unless is_nil(@prefix) do
@@ -47,9 +47,7 @@ defmodule PgTestCase do
         on_exit(fn ->
           Logger.info("Cleaning up database \"#{@database}\"")
 
-          # TODO: Not called when mix test failes badly (e.g. syntax error)
-          stop_postgres(dir)
-          File.rm_rf!(dir)
+          cleanup(dir)
         end)
 
         {:ok, postgres: %{

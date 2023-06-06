@@ -48,10 +48,32 @@ defmodule PgTestCase.Utils do
     end
   end
 
+  def cleanup(dir) do
+    stop_postgres(dir)
+    File.rm_rf!(dir)
+
+    # Also perform a quick check to see if there are any zombie process due to a previous bad exit
+    dirs =
+      System.tmp_dir!()
+      |> Path.join("PgTestCase.*/data/postmaster.pid")
+      |> Path.wildcard()
+
+    # Just stop the postgres cluster using up a process / port, but let's not call `rm -rf` on it
+    Enum.each(dirs, fn old_dir ->
+      basepath =
+        old_dir
+        |> Path.split()
+        |> Enum.drop(-2)
+        |> Path.join()
+
+      stop_postgres(basepath)
+    end)
+  end
+
   def mkdtemp do
     dir =
       System.tmp_dir!()
-      |> Path.join("PgTestCase." <> Base.encode32(:rand.bytes(8), padding: false))
+      |> Path.join("PgTestCase." <> Base.encode32(:rand.bytes(4), padding: false))
 
     if File.exists?(dir) do
       mkdtemp()
